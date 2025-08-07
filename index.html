@@ -95,22 +95,22 @@
       hasilEl.innerHTML = text;
     }
 
-    function kirimKeSheets(data) {
-      fetch(webAppURL + "?data=" + encodeURIComponent(data))
-        .then(res => res.text())
-        .then(txt => {
-          if (txt.includes("Sukses")) {
-            setMessage("✅ Presensi berhasil: <b>" + escapeHtml(data) + "</b>", "success");
-          } else if (txt.includes("Sudah absen")) {
-            setMessage("⚠ " + escapeHtml(data) + " sudah absen hari ini.", "warn");
-          } else {
-            setMessage("❌ Gagal kirim data!", "danger");
-          }
-        })
-        .catch(err => {
-          setMessage("❌ Gagal kirim data!", "danger");
-        });
-    }
+function kirimKeSheets(data) {
+  fetch(webAppURL + "?data=" + encodeURIComponent(data))
+    .then(res => res.text())
+    .then(txt => {
+      if (txt.includes("Sukses")) {
+        setMessage("✅ Presensi berhasil: <b>" + escapeHtml(data) + "</b>", "success");
+      } else if (txt.includes("Sudah absen")) {
+        setMessage("⚠ " + escapeHtml(data) + " sudah absen hari ini.", "warn");
+      } else {
+        setMessage("❌ Gagal kirim data!", "danger");
+      }
+    })
+    .catch(err => {
+      setMessage("❌ Gagal kirim data!", "danger");
+    });
+}
 
     function escapeHtml(unsafe) {
       return unsafe
@@ -166,3 +166,4 @@
   </script>
 </body>
 </html>
+
