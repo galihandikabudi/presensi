@@ -79,7 +79,8 @@
   </div>
 
   <script>
-    const webAppURL = "GANTI_DENGAN_URL_WEB_APP_ANDA"; // URL dari Google Apps Script
+    // GANTI dengan URL Web App Google Apps Script Anda
+    const webAppURL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
 
     let html5QrCode = null;
     let isScanning = false;
@@ -95,22 +96,22 @@
       hasilEl.innerHTML = text;
     }
 
-function kirimKeSheets(data) {
-  fetch(webAppURL + "?data=" + encodeURIComponent(data))
-    .then(res => res.text())
-    .then(txt => {
-      if (txt.includes("Sukses")) {
-        setMessage("✅ Presensi berhasil: <b>" + escapeHtml(data) + "</b>", "success");
-      } else if (txt.includes("Sudah absen")) {
-        setMessage("⚠ " + escapeHtml(data) + " sudah absen hari ini.", "warn");
-      } else {
-        setMessage("❌ Gagal kirim data!", "danger");
-      }
-    })
-    .catch(err => {
-      setMessage("❌ Gagal kirim data!", "danger");
-    });
-}
+    function kirimKeSheets(data) {
+      fetch(webAppURL + "?data=" + encodeURIComponent(data))
+        .then(res => res.text())
+        .then(txt => {
+          if (txt.includes("Sukses")) {
+            setMessage("✅ Presensi berhasil: <b>" + escapeHtml(data) + "</b>", "success");
+          } else if (txt.includes("Sudah absen")) {
+            setMessage("⚠ " + escapeHtml(data) + " sudah absen hari ini.", "warn");
+          } else {
+            setMessage("❌ Gagal kirim data!", "danger");
+          }
+        })
+        .catch(err => {
+          setMessage("❌ Gagal kirim data!", "danger");
+        });
+    }
 
     function escapeHtml(unsafe) {
       return unsafe
@@ -166,4 +167,3 @@ function kirimKeSheets(data) {
   </script>
 </body>
 </html>
-
