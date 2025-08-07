@@ -6,173 +6,88 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
-    :root {
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --accent: #2b8aef;
-      --success: #1b7a3a;
-      --warn: #b36b00;
-      --danger: #d32f2f;
-    }
     body {
       margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: var(--bg);
-      color: #222;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
       display: flex;
-      min-height: 100vh;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       padding: 20px;
     }
     .container {
-      width: 100%;
-      max-width: 820px;
-      background: var(--card);
+      background: white;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 6px 22px rgba(15,20,30,0.08);
-      padding: 22px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 800px;
     }
     h1 {
-      margin: 0 0 12px 0;
       font-size: 20px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .layout {
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      gap: 18px;
-      align-items: start;
+      margin-bottom: 15px;
     }
     #reader {
       width: 100%;
-      background: #000;
+      background: black;
       border-radius: 10px;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
-    }
-    #reader video {
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-    .info {
-      padding: 8px 12px;
     }
     #hasil {
-      margin-top: 12px;
-      padding: 12px;
+      margin-top: 15px;
+      padding: 10px;
       border-radius: 8px;
-      background: rgba(43,138,239,0.06);
-      color: #0b2947;
-      font-weight: 600;
-      min-height: 48px;
-      display:flex;
-      align-items:center;
-      gap:10px;
+      background: rgba(0,0,0,0.05);
+      min-height: 45px;
+      font-weight: bold;
     }
     .status-success {
       background: rgba(27,122,58,0.08);
-      color: var(--success);
+      color: #1b7a3a;
     }
     .status-warn {
-      background: rgba(179,107,0,0.06);
-      color: var(--warn);
+      background: rgba(179,107,0,0.08);
+      color: #b36b00;
     }
     .status-danger {
-      background: rgba(211,47,47,0.06);
-      color: var(--danger);
-    }
-    .controls {
-      margin-top: 10px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+      background: rgba(211,47,47,0.08);
+      color: #d32f2f;
     }
     button {
-      border: none;
+      margin-top: 10px;
       padding: 8px 12px;
+      border: none;
       border-radius: 8px;
-      cursor: pointer;
-      background: var(--accent);
+      background: #2b8aef;
       color: white;
-      font-weight: 600;
+      cursor: pointer;
     }
     button.secondary {
-      background: #e6eefb;
-      color: #14589b;
-      font-weight: 600;
-    }
-    small {
-      display:block;
-      margin-top:8px;
-      color:#666;
-    }
-    @media (max-width: 780px) {
-      .layout { grid-template-columns: 1fr; }
-      #reader { min-height: 260px; }
+      background: #ddd;
+      color: #333;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>📷 Presensi Guru — Scan QR</h1>
-    <div class="layout">
-      <div>
-        <div id="reader"></div>
-        <div style="margin-top:10px; display:flex; justify-content:space-between; gap:8px;">
-          <div style="flex:1;">
-            <div style="font-size:13px; color:#555;">Kamera aktif. Arahkan kartu QR ke kotak deteksi.</div>
-            <small>Jika kamera tidak bekerja: pastikan izin kamera diberikan dan buka halaman lewat HTTPS / localhost.</small>
-          </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button id="stopBtn" class="secondary">Stop</button>
-            <button id="startBtn">Start</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="info">
-        <div id="hasil">Arahkan kartu QR ke kamera untuk presensi.</div>
-
-        <div class="controls" style="margin-top:14px;">
-          <button id="testSend">Tes Kirim Manual</button>
-          <button id="clearMsg" class="secondary">Clear</button>
-        </div>
-
-        <div style="margin-top:12px; font-size:13px; color:#666;">
-          <div><strong>Catatan:</strong></div>
-          <ul style="padding-left:18px; margin:6px 0;">
-            <li>Setiap ID hanya boleh tercatat <em>satu kali per hari</em> (cek dilakukan di Google Sheets).</li>
-            <li>Pastikan <code>webAppURL</code> mengarah ke Google Apps Script Web App yang benar.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <div id="reader"></div>
+    <div id="hasil">Arahkan kartu QR ke kamera untuk presensi.</div>
+    <button id="stopBtn" class="secondary">Stop</button>
+    <button id="startBtn">Start</button>
   </div>
 
   <script>
-    // ======= PENTING: ganti dengan URL Web App Google Apps Script Anda =======
-    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec";
-    // ======================================================================
+    const webAppURL = "GANTI_DENGAN_URL_WEB_APP_ANDA"; // URL dari Google Apps Script
 
     let html5QrCode = null;
     let isScanning = false;
-    let scanCooldown = false; // mencegah pengiriman ganda cepat
-    const COOLDOWN_MS = 3000; // jeda 3 detik setelah setiap hasil scan
+    let scanCooldown = false;
+    const COOLDOWN_MS = 3000;
     const hasilEl = document.getElementById("hasil");
-    const stopBtn = document.getElementById("stopBtn");
-    const startBtn = document.getElementById("startBtn");
-    const testSendBtn = document.getElementById("testSend");
-    const clearMsgBtn = document.getElementById("clearMsg");
 
     function setMessage(text, type) {
-      // type: "info" | "success" | "warn" | "danger"
       hasilEl.className = "";
       if (type === "success") hasilEl.classList.add("status-success");
       else if (type === "warn") hasilEl.classList.add("status-warn");
@@ -181,28 +96,20 @@
     }
 
     function kirimKeSheets(data) {
-      // kirim ke Web App, kembalikan Promise teks balasan
-      return fetch(webAppURL + "?data=" + encodeURIComponent(data), { method: "GET", cache: "no-cache" })
-        .then(res => res.text());
-    }
-
-    function handleServerResponse(originalData, txt) {
-      // menampilkan pesan sesuai balasan dari Apps Script
-      if (!txt) {
-        setMessage("❌ Respon kosong dari server", "danger");
-        return;
-      }
-      txt = txt.toString();
-      if (txt.indexOf("Sukses") !== -1) {
-        setMessage("✅ Presensi berhasil: <b>" + escapeHtml(originalData) + "</b>", "success");
-      } else if (txt.indexOf("Sudah absen") !== -1 || txt.indexOf("Sudah") !== -1) {
-        setMessage("⚠ " + escapeHtml(originalData) + " sudah absen hari ini.", "warn");
-      } else if (txt.indexOf("Gagal") !== -1) {
-        setMessage("❌ Gagal: " + escapeHtml(txt), "danger");
-      } else {
-        // fallback
-        setMessage("ℹ️ Respon server: " + escapeHtml(txt), "info");
-      }
+      fetch(webAppURL + "?data=" + encodeURIComponent(data))
+        .then(res => res.text())
+        .then(txt => {
+          if (txt.includes("Sukses")) {
+            setMessage("✅ Presensi berhasil: <b>" + escapeHtml(data) + "</b>", "success");
+          } else if (txt.includes("Sudah absen")) {
+            setMessage("⚠ " + escapeHtml(data) + " sudah absen hari ini.", "warn");
+          } else {
+            setMessage("❌ Gagal kirim data!", "danger");
+          }
+        })
+        .catch(err => {
+          setMessage("❌ Gagal kirim data!", "danger");
+        });
     }
 
     function escapeHtml(unsafe) {
@@ -214,116 +121,48 @@
         .replace(/'/g, "&#039;");
     }
 
-    function onScanSuccess(decodedText, decodedResult) {
-      if (scanCooldown) {
-        // abaikan hasil selama cooldown
-        return;
-      }
+    function onScanSuccess(decodedText) {
+      if (scanCooldown) return;
       scanCooldown = true;
-      // set cooldown timeout
-      setTimeout(() => { scanCooldown = false; }, COOLDOWN_MS);
-
-      setMessage("Mengirim data: <b>" + escapeHtml(decodedText) + "</b> ...", "info");
-
-      kirimKeSheets(decodedText)
-        .then(txt => {
-          handleServerResponse(decodedText, txt);
-        })
-        .catch(err => {
-          console.error("Fetch error:", err);
-          setMessage("❌ Gagal kirim data! (cek koneksi atau Web App URL)", "danger");
-        });
+      setTimeout(() => scanCooldown = false, COOLDOWN_MS);
+      kirimKeSheets(decodedText);
     }
 
     function startScanner() {
       if (isScanning) return;
-      html5QrCode = new Html5Qrcode("reader", /* verbose= */ false);
+      html5QrCode = new Html5Qrcode("reader");
       Html5Qrcode.getCameras().then(devices => {
-        if (!devices || devices.length === 0) {
+        if (devices && devices.length) {
+          let cameraId = devices[0].id;
+          html5QrCode.start(
+            cameraId,
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            onScanSuccess
+          ).then(() => {
+            isScanning = true;
+            setMessage("Kamera aktif. Arahkan kartu QR ke kotak deteksi.", "info");
+          });
+        } else {
           setMessage("Kamera tidak ditemukan!", "danger");
-          return;
         }
-        // pilih kamera belakang jika tersedia (device label bisa mengandung 'back' atau 'rear')
-        let cameraId = devices[0].id;
-        for (let d of devices) {
-          const label = (d.label || "").toLowerCase();
-          if (label.includes("back") || label.includes("rear") || label.includes("environment")) {
-            cameraId = d.id;
-            break;
-          }
-        }
-
-        html5QrCode.start(
-          cameraId,
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.333
-          },
-          onScanSuccess
-        ).then(() => {
-          isScanning = true;
-          setMessage("Kamera aktif. Arahkan kartu QR ke kotak deteksi.", "info");
-        }).catch(err => {
-          console.error("Start error:", err);
-          setMessage("Gagal memulai kamera: " + err, "danger");
-        });
-      }).catch(err => {
-        console.error("getCameras error:", err);
-        setMessage("Gagal mengakses kamera! Pastikan izin diberikan dan halaman dibuka lewat HTTPS atau localhost.", "danger");
+      }).catch(() => {
+        setMessage("Gagal mengakses kamera!", "danger");
       });
     }
 
     function stopScanner() {
-      if (!isScanning || !html5QrCode) return;
+      if (!isScanning) return;
       html5QrCode.stop().then(() => {
         html5QrCode.clear();
         isScanning = false;
         setMessage("Scanner dihentikan.", "info");
-      }).catch(err => {
-        console.error("Stop error:", err);
-        setMessage("Gagal menghentikan scanner: " + err, "danger");
       });
     }
 
-    // Tombol control
-    stopBtn.addEventListener("click", () => {
-      stopScanner();
-    });
-    startBtn.addEventListener("click", () => {
-      startScanner();
-    });
+    document.getElementById("startBtn").addEventListener("click", startScanner);
+    document.getElementById("stopBtn").addEventListener("click", stopScanner);
 
-    // Tombol tes kirim manual (berguna untuk cek Web App)
-    testSendBtn.addEventListener("click", () => {
-      const sample = "TEST_ID_001 | Nama Test";
-      setMessage("Mengirim data tes...", "info");
-      kirimKeSheets(sample)
-        .then(txt => {
-          handleServerResponse(sample, txt);
-        })
-        .catch(err => {
-          console.error(err);
-          setMessage("❌ Gagal kirim data tes!", "danger");
-        });
-    });
-
-    clearMsgBtn.addEventListener("click", () => {
-      setMessage("Arahkan kartu QR ke kamera untuk presensi.", "info");
-    });
-
-    // Mulai scanner otomatis saat halaman siap
-    window.addEventListener("load", () => {
-      startScanner();
-    });
-
-    // Hentikan kamera saat meninggalkan halaman
-    window.addEventListener("beforeunload", () => {
-      if (isScanning && html5QrCode) {
-        try { html5QrCode.stop(); } catch(e) {}
-      }
-    });
-
+    window.addEventListener("load", startScanner);
   </script>
 </body>
 </html>
