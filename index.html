@@ -3,168 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <title>Presensi Guru QR</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      text-align: center;
+      background: #f8f8f8;
     }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 800px;
-    }
-    h1 {
-      font-size: 20px;
-      margin-bottom: 15px;
+    h2 {
+      color: #333;
     }
     #reader {
-      width: 100%;
-      background: black;
+      margin: auto;
+      width: 350px;
+      background: white;
       border-radius: 10px;
-      overflow: hidden;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     #hasil {
       margin-top: 15px;
-      padding: 10px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.05);
-      min-height: 45px;
-      font-weight: bold;
+      font-size: 18px;
+      color: green;
     }
-    .status-success {
-      background: rgba(27,122,58,0.08);
-      color: #1b7a3a;
-    }
-    .status-warn {
-      background: rgba(179,107,0,0.08);
-      color: #b36b00;
-    }
-    .status-danger {
-      background: rgba(211,47,47,0.08);
-      color: #d32f2f;
-    }
-    button {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      background: #2b8aef;
-      color: white;
-      cursor: pointer;
-    }
-    button.secondary {
-      background: #ddd;
-      color: #333;
+    video {
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📷 Presensi Guru — Scan QR</h1>
-    <div id="reader"></div>
-    <div id="hasil">Arahkan kartu QR ke kamera untuk presensi.</div>
-    <button id="stopBtn" class="secondary">Stop</button>
-    <button id="startBtn">Start</button>
-  </div>
+
+  <h2>Scan Kartu Presensi Guru</h2>
+  <div id="reader"></div>
+  <div id="hasil">Arahkan kartu QR ke kamera</div>
 
   <script>
-    // GANTI dengan URL Web App Google Apps Script Anda
-    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec";
-
-    let html5QrCode = null;
-    let isScanning = false;
-    let scanCooldown = false;
-    const COOLDOWN_MS = 3000;
-    const hasilEl = document.getElementById("hasil");
-
-    function setMessage(text, type) {
-      hasilEl.className = "";
-      if (type === "success") hasilEl.classList.add("status-success");
-      else if (type === "warn") hasilEl.classList.add("status-warn");
-      else if (type === "danger") hasilEl.classList.add("status-danger");
-      hasilEl.innerHTML = text;
-    }
+    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // Ganti dengan URL Web App kamu
 
     function kirimKeSheets(data) {
       fetch(webAppURL + "?data=" + encodeURIComponent(data))
         .then(res => res.text())
         .then(txt => {
-          if (txt.includes("Sukses")) {
-            setMessage("✅ Presensi berhasil: <b>" + escapeHtml(data) + "</b>", "success");
-          } else if (txt.includes("Sudah absen")) {
-            setMessage("⚠ " + escapeHtml(data) + " sudah absen hari ini.", "warn");
-          } else {
-            setMessage("❌ Gagal kirim data!", "danger");
-          }
+          document.getElementById("hasil").innerHTML = "✅ Presensi berhasil: <b>" + data + "</b>";
         })
         .catch(err => {
-          setMessage("❌ Gagal kirim data!", "danger");
+          document.getElementById("hasil").innerText = "❌ Gagal kirim data!";
         });
     }
 
-    function escapeHtml(unsafe) {
-      return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
     function onScanSuccess(decodedText) {
-      if (scanCooldown) return;
-      scanCooldown = true;
-      setTimeout(() => scanCooldown = false, COOLDOWN_MS);
       kirimKeSheets(decodedText);
     }
 
-    function startScanner() {
-      if (isScanning) return;
-      html5QrCode = new Html5Qrcode("reader");
-      Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-          let cameraId = devices[0].id;
-          html5QrCode.start(
-            cameraId,
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            onScanSuccess
-          ).then(() => {
-            isScanning = true;
-            setMessage("Kamera aktif. Arahkan kartu QR ke kotak deteksi.", "info");
-          });
-        } else {
-          setMessage("Kamera tidak ditemukan!", "danger");
-        }
-      }).catch(() => {
-        setMessage("Gagal mengakses kamera!", "danger");
-      });
-    }
+    let html5QrCode = new Html5Qrcode("reader");
 
-    function stopScanner() {
-      if (!isScanning) return;
-      html5QrCode.stop().then(() => {
-        html5QrCode.clear();
-        isScanning = false;
-        setMessage("Scanner dihentikan.", "info");
-      });
-    }
-
-    document.getElementById("startBtn").addEventListener("click", startScanner);
-    document.getElementById("stopBtn").addEventListener("click", stopScanner);
-
-    window.addEventListener("load", startScanner);
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        let cameraId = devices[0].id;
+        html5QrCode.start(
+          cameraId,
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 } // Kotak deteksi QR
+          },
+          onScanSuccess
+        );
+      } else {
+        document.getElementById("hasil").innerText = "Kamera tidak ditemukan!";
+      }
+    }).catch(err => {
+      document.getElementById("hasil").innerText = "Gagal mengakses kamera!";
+    });
   </script>
+
 </body>
 </html>
 
