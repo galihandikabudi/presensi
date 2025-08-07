@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Presensi Guru QR</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f8f8f8;
+    }
+    h2 {
+      color: #333;
+    }
+    #reader {
+      margin: auto;
+      width: 350px;
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #hasil {
+      margin-top: 15px;
+      font-size: 18px;
+      color: green;
+    }
+    video {
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📷 Scan Kartu Presensi Guru</h2>
+  <div id="reader"></div>
+  <div id="hasil">Arahkan kartu QR ke kamera</div>
+
+  <script>
+    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // Ganti dengan URL Web App kamu
+
+    function kirimKeSheets(data) {
+      fetch(webAppURL + "?data=" + encodeURIComponent(data))
+        .then(res => res.text())
+        .then(txt => {
+          document.getElementById("hasil").innerHTML = "✅ Presensi berhasil: <b>" + data + "</b>";
+        })
+        .catch(err => {
+          document.getElementById("hasil").innerText = "❌ Gagal kirim data!";
+        });
+    }
+
+    function onScanSuccess(decodedText) {
+      kirimKeSheets(decodedText);
+    }
+
+    let html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        let cameraId = devices[0].id;
+        html5QrCode.start(
+          cameraId,
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 } // Kotak deteksi QR
+          },
+          onScanSuccess
+        );
+      } else {
+        document.getElementById("hasil").innerText = "Kamera tidak ditemukan!";
+      }
+    }).catch(err => {
+      document.getElementById("hasil").innerText = "Gagal mengakses kamera!";
+    });
+  </script>
+
+</body>
+</html>
