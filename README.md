@@ -24,19 +24,27 @@ Penggunaan bebas untuk tujuan non-komersial.
 ## Cara Menggunakan
 1. **Upload** semua file ke GitHub Pages atau server yang mendukung HTTPS.
 2. Pastikan file **`beep.mp3`** ada di folder `assets/`.
-3. **Ganti URL Web App** di `index.html` dengan URL Google Apps Script Anda:
+3. Buat **QRCode** yang berisikan data dibawah ini untuk presensi
+
+   'ID | Nama Guru'
+   
+5. Buat Google Spreadsheet dengan nama file **PresensiGuru** dengan kolom
+
+   'Tanggal | ID Guru | Nama Guru | Jam Masuk | Jam Pulang`
+   
+6. **Ganti URL Web App** di `index.html` dengan URL Google Apps Script Anda:
 
    ```javascript
    const webAppURL = "URL_WEB_APP_ANDA";
    
-5. Buka aplikasi di browser yang mendukung kamera.
-6. Pilih Mode Masuk/Pulang, klik Start, lalu arahkan QR Code ke kamera.
-7. Lihat status presensi di layar.
+7. Buka aplikasi di browser yang mendukung kamera.
+8. Pilih Mode Masuk/Pulang, klik Start, lalu arahkan QR Code ke kamera.
+9. Lihat status presensi di layar.
 
 ## Konfigurasi Google Apps Script
 Gunakan skrip Apps Script untuk menerima parameter data dan mode, lalu simpan ke Google Spreadsheet.
 Pastikan Web App dipublikasikan dengan akses "Anyone" agar bisa menerima request dari aplikasi.
-Berikut adalah skripya:
+Berikut adalah skripnya:
 
    ```javascript
    function doGet(e) {
