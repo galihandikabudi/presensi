@@ -18,7 +18,7 @@
     }
     .container {
       background: #fff;
-      padding: 10px 15px;
+      padding: 12px 15px;
       border-radius: 10px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       width: 100%;
@@ -28,20 +28,25 @@
       flex-direction: column;
       justify-content: space-between;
     }
+    /* Header */
+    .header {
+      text-align: center;
+    }
     h1 {
       font-size: 16px;
       font-weight: 600;
-      text-align: center;
       color: #2c3e50;
-      margin: 5px 0 2px 0;
+      margin: 0;
     }
     #datetime {
-      text-align: center;
       font-size: 13px;
+      font-weight: 500;
       color: #555;
-      margin-bottom: 5px;
+      margin-top: 4px;
     }
+    /* Status message */
     #hasil {
+      margin-top: 8px;
       padding: 8px 10px;
       border-radius: 6px;
       background: #f8f9fa;
@@ -53,6 +58,7 @@
     .status-success { background: #e6f4ea; color: #137333; }
     .status-warn { background: #fff4e5; color: #b06a00; }
     .status-danger { background: #fdecea; color: #d93025; }
+    /* QR Reader */
     #reader {
       width: 100%;
       height: 45%;
@@ -60,6 +66,7 @@
       overflow: hidden;
       background: #000;
     }
+    /* Buttons */
     button {
       flex: 1;
       padding: 8px;
@@ -92,14 +99,17 @@
 </head>
 <body>
   <div class="container">
-    <div>
-      <h1>📷 Presensi Guru — Scan QR</h1>
+    <!-- Header -->
+    <div class="header">
+      <h1>Presensi Guru SMK MUHADA</h1>
       <div id="datetime"></div>
       <div id="hasil">Klik <b>Start</b> lalu arahkan kartu QR ke kamera.</div>
     </div>
 
+    <!-- QR Reader -->
     <div id="reader"></div>
 
+    <!-- Buttons -->
     <div class="button-group">
       <div class="mode-buttons">
         <button id="modeMasuk" class="primary">Mode Masuk</button>
@@ -124,7 +134,7 @@
     const hasilEl = document.getElementById("hasil");
     const beepSound = document.getElementById("beepSound");
 
-    // === Jam & Tanggal Realtime ===
+    // Jam & Tanggal realtime
     function updateDateTime() {
       const now = new Date();
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -223,11 +233,3 @@
     document.getElementById("modeMasuk").addEventListener("click", () => {
       currentMode = "masuk";
       setMessage("Mode presensi diubah ke MASUK.", "info");
-    });
-    document.getElementById("modePulang").addEventListener("click", () => {
-      currentMode = "pulang";
-      setMessage("Mode presensi diubah ke PULANG.", "info");
-    });
-  </script>
-</body>
-</html>
