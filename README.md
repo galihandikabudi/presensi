@@ -113,7 +113,7 @@ Berikut adalah skripya:
      }
    
      return ContentService.createTextOutput("Mode tidak dikenali");
-   }
+   };
 
 ---
 
