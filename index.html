@@ -3,79 +3,180 @@
 <head>
   <meta charset="UTF-8">
   <title>Presensi Guru QR</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f8f8f8;
+      background: #f6f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
-    h2 {
-      color: #333;
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 800px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
     }
     #reader {
-      margin: auto;
-      width: 350px;
-      background: white;
+      width: 100%;
+      background: black;
       border-radius: 10px;
-      padding: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
     #hasil {
       margin-top: 15px;
-      font-size: 18px;
-      color: green;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.05);
+      min-height: 45px;
+      font-weight: bold;
     }
-    video {
-      border-radius: 10px;
+    .status-success { background: rgba(27,122,58,0.08); color: #1b7a3a; }
+    .status-warn { background: rgba(179,107,0,0.08); color: #b36b00; }
+    .status-danger { background: rgba(211,47,47,0.08); color: #d32f2f; }
+    button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #2b8aef;
+      color: white;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #ddd;
+      color: #333;
+    }
+    .mode-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>📷 Presensi Guru — Scan QR</h1>
+    
+    <div class="mode-buttons">
+      <button id="modeMasuk">Mode Masuk</button>
+      <button id="modePulang" class="secondary">Mode Pulang</button>
+    </div>
 
-  <h2>Scan Kartu Presensi Guru</h2>
-  <div id="reader"></div>
-  <div id="hasil">Arahkan kartu QR ke kamera</div>
+    <div id="reader"></div>
+    <div id="hasil">Pilih mode, lalu arahkan kartu QR ke kamera untuk presensi.</div>
+    <button id="stopBtn" class="secondary">Stop</button>
+    <button id="startBtn">Start</button>
+  </div>
 
   <script>
-    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // Ganti dengan URL Web App kamu
+    const webAppURL = "GANTI_DENGAN_URL_WEB_APP_ANDA"; // URL Google Apps Script
+
+    let html5QrCode = null;
+    let isScanning = false;
+    let scanCooldown = false;
+    let currentMode = "masuk"; // default mode
+    const COOLDOWN_MS = 3000;
+    const hasilEl = document.getElementById("hasil");
+
+    function setMessage(text, type) {
+      hasilEl.className = "";
+      if (type === "success") hasilEl.classList.add("status-success");
+      else if (type === "warn") hasilEl.classList.add("status-warn");
+      else if (type === "danger") hasilEl.classList.add("status-danger");
+      hasilEl.innerHTML = text;
+    }
 
     function kirimKeSheets(data) {
-      fetch(webAppURL + "?data=" + encodeURIComponent(data))
+      fetch(webAppURL + "?data=" + encodeURIComponent(data) + "&mode=" + encodeURIComponent(currentMode))
         .then(res => res.text())
         .then(txt => {
-          document.getElementById("hasil").innerHTML = "✅ Presensi berhasil: <b>" + data + "</b>";
+          if (txt.toLowerCase().includes("berhasil")) {
+            setMessage("✅ " + txt + ": <b>" + escapeHtml(data) + "</b>", "success");
+          } else if (txt.toLowerCase().includes("sudah")) {
+            setMessage("⚠ " + txt, "warn");
+          } else if (txt.toLowerCase().includes("belum")) {
+            setMessage("⚠ " + txt, "warn");
+          } else {
+            setMessage("❌ " + txt, "danger");
+          }
         })
         .catch(err => {
-          document.getElementById("hasil").innerText = "❌ Gagal kirim data!";
+          setMessage("❌ Gagal kirim data!", "danger");
         });
     }
 
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function onScanSuccess(decodedText) {
+      if (scanCooldown) return;
+      scanCooldown = true;
+      setTimeout(() => scanCooldown = false, COOLDOWN_MS);
       kirimKeSheets(decodedText);
     }
 
-    let html5QrCode = new Html5Qrcode("reader");
+    function startScanner() {
+      if (isScanning) return;
+      html5QrCode = new Html5Qrcode("reader");
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          let cameraId = devices[0].id;
+          html5QrCode.start(
+            cameraId,
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            onScanSuccess
+          ).then(() => {
+            isScanning = true;
+            setMessage("Mode: " + currentMode.toUpperCase() + ". Arahkan kartu QR ke kamera.", "info");
+          });
+        } else {
+          setMessage("Kamera tidak ditemukan!", "danger");
+        }
+      }).catch(() => {
+        setMessage("Gagal mengakses kamera!", "danger");
+      });
+    }
 
-    Html5Qrcode.getCameras().then(devices => {
-      if (devices && devices.length) {
-        let cameraId = devices[0].id;
-        html5QrCode.start(
-          cameraId,
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 } // Kotak deteksi QR
-          },
-          onScanSuccess
-        );
-      } else {
-        document.getElementById("hasil").innerText = "Kamera tidak ditemukan!";
-      }
-    }).catch(err => {
-      document.getElementById("hasil").innerText = "Gagal mengakses kamera!";
+    function stopScanner() {
+      if (!isScanning) return;
+      html5QrCode.stop().then(() => {
+        html5QrCode.clear();
+        isScanning = false;
+        setMessage("Scanner dihentikan.", "info");
+      });
+    }
+
+    document.getElementById("startBtn").addEventListener("click", startScanner);
+    document.getElementById("stopBtn").addEventListener("click", stopScanner);
+
+    document.getElementById("modeMasuk").addEventListener("click", () => {
+      currentMode = "masuk";
+      setMessage("Mode presensi diubah ke MASUK.", "info");
     });
-  </script>
+    document.getElementById("modePulang").addEventListener("click", () => {
+      currentMode = "pulang";
+      setMessage("Mode presensi diubah ke PULANG.", "info");
+    });
 
+    window.addEventListener("load", startScanner);
+  </script>
 </body>
 </html>
-
