@@ -17,10 +17,9 @@ Data presensi dikirim langsung ke **Google Spreadsheet** melalui **Google Apps S
 ---
 
 ## 📂 Struktur Folder
-├── index.html # File utama aplikasi
-├── assets/
-│ └── beep.mp3 # Suara beep saat QR terbaca
-└── README.md # Dokumentasi singkat
+1. index.html # File utama aplikasi
+2. assets/beep.mp3 # Suara beep saat QR terbaca
+3. README.md # Dokumentasi singkat
 
 ---
 
