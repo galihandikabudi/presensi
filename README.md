@@ -12,7 +12,3 @@ Mendukung **presensi masuk** dan **presensi pulang**, serta menampilkan **sound 
 - Cegah presensi ganda untuk hari yang sama.
 - Efek suara beep saat QR terbaca.
 - Tampilan responsif dan sederhana.
-
----
-
-## 🗂 Struktur File
