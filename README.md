@@ -3,6 +3,10 @@
 Aplikasi ini digunakan untuk mencatat kehadiran guru secara otomatis dengan memindai QR Code menggunakan kamera laptop atau perangkat lain.  
 Data presensi dikirim langsung ke **Google Spreadsheet** melalui **Google Apps Script Web App**.
 
+## Lisensi
+Proyek ini dibuat untuk keperluan internal sekolah.
+Penggunaan bebas untuk tujuan non-komersial.
+
 ---
 
 ## Fitur Utama
@@ -113,10 +117,4 @@ Berikut adalah skripya:
      }
    
      return ContentService.createTextOutput("Mode tidak dikenali");
-   }```
-
----
-
-## Lisensi
-Proyek ini dibuat untuk keperluan internal sekolah.
-Penggunaan bebas untuk tujuan non-komersial.
+   }
