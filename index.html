@@ -6,40 +6,42 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Segoe UI', Arial, sans-serif;
       background: #f0f2f5;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      color: #333;
     }
     .container {
       background: #fff;
-      padding: 20px 25px;
+      padding: 10px 15px;
       border-radius: 10px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       width: 100%;
-      max-width: 420px;
+      max-width: 380px;
+      height: 95vh; /* hampir penuh layar */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     h1 {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 15px;
       text-align: center;
       color: #2c3e50;
+      margin: 5px 0;
     }
     #hasil {
-      margin-bottom: 15px;
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 6px;
       background: #f8f9fa;
-      min-height: 45px;
-      font-size: 14px;
+      font-size: 13px;
       text-align: center;
-      line-height: 1.4;
+      min-height: 36px;
       transition: all 0.3s ease;
     }
     .status-success { background: #e6f4ea; color: #137333; }
@@ -47,17 +49,17 @@
     .status-danger { background: #fdecea; color: #d93025; }
     #reader {
       width: 100%;
+      height: 45%; /* scanner proporsional */
       border-radius: 8px;
       overflow: hidden;
       background: #000;
-      margin-bottom: 12px;
     }
     button {
       flex: 1;
-      padding: 10px;
+      padding: 8px;
       border: none;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       transition: background 0.3s ease;
     }
@@ -73,39 +75,40 @@
     .secondary:hover { background: #c7c7c7; }
     .mode-buttons, .scan-buttons {
       display: flex;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 6px;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📷 Presensi Guru — Scan QR</h1>
-
-    <!-- Keterangan hasil presensi di atas -->
-    <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera.</div>
+    <div>
+      <h1>📷 Presensi Guru — Scan QR</h1>
+      <div id="hasil">Klik <b>Start</b> lalu arahkan kartu QR ke kamera.</div>
+    </div>
 
     <div id="reader"></div>
 
-    <!-- Tombol Mode -->
-    <div class="mode-buttons">
-      <button id="modeMasuk" class="primary">Mode Masuk</button>
-      <button id="modePulang" class="secondary">Mode Pulang</button>
+    <div class="button-group">
+      <div class="mode-buttons">
+        <button id="modeMasuk" class="primary">Mode Masuk</button>
+        <button id="modePulang" class="secondary">Mode Pulang</button>
+      </div>
+      <div class="scan-buttons">
+        <button id="startBtn" class="primary">Start</button>
+        <button id="stopBtn" class="secondary">Stop</button>
+      </div>
     </div>
 
-    <!-- Tombol Start / Stop -->
-    <div class="scan-buttons">
-      <button id="startBtn" class="primary">Start</button>
-      <button id="stopBtn" class="secondary">Stop</button>
-    </div>
-
-    <!-- Audio beep -->
     <audio id="beepSound" src="assets/beep.mp3" preload="auto"></audio>
   </div>
 
   <script>
     const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec";
-
     let html5QrCode = null;
     let isScanning = false;
     let scanCooldown = false;
@@ -130,8 +133,6 @@
             setMessage("✅ " + txt + ": <b>" + escapeHtml(data) + "</b>", "success");
           } else if (txt.toLowerCase().includes("sudah")) {
             setMessage("⚠ " + txt, "warn");
-          } else if (txt.toLowerCase().includes("belum")) {
-            setMessage("⚠ " + txt, "warn");
           } else {
             setMessage("❌ " + txt, "danger");
           }
@@ -142,12 +143,11 @@
     }
 
     function escapeHtml(unsafe) {
-      return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return unsafe.replace(/&/g, "&amp;")
+                   .replace(/</g, "&lt;")
+                   .replace(/>/g, "&gt;")
+                   .replace(/"/g, "&quot;")
+                   .replace(/'/g, "&#039;");
     }
 
     function onScanSuccess(decodedText) {
@@ -159,13 +159,11 @@
         beepSound.currentTime = 0;
         beepSound.play().catch(() => {});
       }
-
       kirimKeSheets(decodedText);
     }
 
     function startScanner() {
       if (isScanning) return;
-
       if (beepSound) {
         beepSound.volume = 0;
         beepSound.play().then(() => {
@@ -174,14 +172,12 @@
           beepSound.volume = 1;
         }).catch(() => {});
       }
-
       html5QrCode = new Html5Qrcode("reader");
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
-          let cameraId = devices[0].id;
           html5QrCode.start(
-            cameraId,
-            { fps: 10, qrbox: { width: 230, height: 230 } },
+            devices[0].id,
+            { fps: 10, qrbox: { width: 200, height: 200 } },
             onScanSuccess
           ).then(() => {
             isScanning = true;
