@@ -24,10 +24,7 @@
       width: 100%;
       max-width: 800px;
     }
-    h1 {
-      font-size: 20px;
-      margin-bottom: 15px;
-    }
+    h1 { font-size: 20px; margin-bottom: 15px; }
     #reader {
       width: 100%;
       background: black;
@@ -54,10 +51,7 @@
       color: white;
       cursor: pointer;
     }
-    button.secondary {
-      background: #ddd;
-      color: #333;
-    }
+    button.secondary { background: #ddd; color: #333; }
     .mode-buttons {
       display: flex;
       gap: 10px;
@@ -78,6 +72,9 @@
     <div id="hasil">Pilih mode, lalu arahkan kartu QR ke kamera untuk presensi.</div>
     <button id="stopBtn" class="secondary">Stop</button>
     <button id="startBtn">Start</button>
+
+    <!-- Elemen Audio -->
+    <audio id="beepSound" src="beep.wav" preload="auto"></audio>
   </div>
 
   <script>
@@ -130,6 +127,12 @@
       if (scanCooldown) return;
       scanCooldown = true;
       setTimeout(() => scanCooldown = false, COOLDOWN_MS);
+
+      // Putar suara saat QR berhasil terbaca
+      document.getElementById("beepSound").play().catch(err => {
+        console.warn("Gagal memutar suara:", err);
+      });
+
       kirimKeSheets(decodedText);
     }
 
@@ -180,4 +183,3 @@
   </script>
 </body>
 </html>
-
