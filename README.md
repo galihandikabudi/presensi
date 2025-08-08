@@ -7,8 +7,6 @@ Data presensi dikirim langsung ke **Google Spreadsheet** melalui **Google Apps S
 Proyek ini dibuat untuk keperluan internal sekolah.
 Penggunaan bebas untuk tujuan non-komersial.
 
----
-
 ## Fitur Utama
 - **Scan QR Code** menggunakan kamera perangkat (via `html5-qrcode`).
 - **Mode Presensi**: Masuk dan Pulang.
@@ -18,14 +16,10 @@ Penggunaan bebas untuk tujuan non-komersial.
 - **Sound Effect** beep saat QR terbaca.
 - **Desain Minimalis & Responsif** — muat dalam 1 layar tanpa scroll.
 
----
-
 ## Struktur Folder
 1. index.html # File utama aplikasi
 2. assets/beep.mp3 # Suara beep saat QR terbaca
 3. README.md # Dokumentasi singkat
-
----
 
 ## 🚀 Cara Menggunakan
 1. **Upload** semua file ke GitHub Pages atau server yang mendukung HTTPS.
@@ -38,8 +32,6 @@ Penggunaan bebas untuk tujuan non-komersial.
 5. Buka aplikasi di browser yang mendukung kamera.
 6. Pilih Mode Masuk/Pulang, klik Start, lalu arahkan QR Code ke kamera.
 7. Lihat status presensi di layar.
-   
----
 
 ## Konfigurasi Google Apps Script
 Gunakan skrip Apps Script untuk menerima parameter data dan mode, lalu simpan ke Google Spreadsheet.
