@@ -23,7 +23,7 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       width: 100%;
       max-width: 380px;
-      height: 95vh; /* hampir penuh layar */
+      height: 95vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -33,7 +33,13 @@
       font-weight: 600;
       text-align: center;
       color: #2c3e50;
-      margin: 5px 0;
+      margin: 5px 0 2px 0;
+    }
+    #datetime {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 5px;
     }
     #hasil {
       padding: 8px 10px;
@@ -49,7 +55,7 @@
     .status-danger { background: #fdecea; color: #d93025; }
     #reader {
       width: 100%;
-      height: 45%; /* scanner proporsional */
+      height: 45%;
       border-radius: 8px;
       overflow: hidden;
       background: #000;
@@ -88,6 +94,7 @@
   <div class="container">
     <div>
       <h1>📷 Presensi Guru — Scan QR</h1>
+      <div id="datetime"></div>
       <div id="hasil">Klik <b>Start</b> lalu arahkan kartu QR ke kamera.</div>
     </div>
 
@@ -116,6 +123,17 @@
     const COOLDOWN_MS = 3000;
     const hasilEl = document.getElementById("hasil");
     const beepSound = document.getElementById("beepSound");
+
+    // === Jam & Tanggal Realtime ===
+    function updateDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateStr = now.toLocaleDateString('id-ID', options);
+      const timeStr = now.toLocaleTimeString('id-ID');
+      document.getElementById("datetime").textContent = `${dateStr} | ${timeStr}`;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
 
     function setMessage(text, type) {
       hasilEl.className = "";
