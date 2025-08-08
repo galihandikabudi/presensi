@@ -26,11 +26,11 @@ Penggunaan bebas untuk tujuan non-komersial.
 2. Pastikan file **`beep.mp3`** ada di folder `assets/`.
 3. Buat **QRCode** yang berisikan data dibawah ini untuk presensi
 
-   'ID | Nama Guru'
+   `ID | Nama Guru`
    
 5. Buat Google Spreadsheet dengan nama file **PresensiGuru** dengan kolom
 
-   'Tanggal | ID Guru | Nama Guru | Jam Masuk | Jam Pulang`
+   `Tanggal | ID Guru | Nama Guru | Jam Masuk | Jam Pulang`
    
 6. **Ganti URL Web App** di `index.html` dengan URL Google Apps Script Anda:
 
