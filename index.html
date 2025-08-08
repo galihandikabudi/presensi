@@ -74,7 +74,38 @@
     <button id="startBtn">Start</button>
 
     <!-- Ganti src di bawah dengan link Google Drive direct download atau file lokal -->
-    <audio id="beepSound" src="https://drive.google.com/uc?export=download&id=1_FzXIKgaMll3Igf5wA-IFxkNwx5F4bwl" preload="auto"></audio>
+   <!-- Gunakan direct link Google Drive -->
+<audio id="beepSound" src="https://drive.google.com/uc?export=download&id=1_FzXIKgaMll3Igf5wA-IFxkNwx5F4bwl" preload="auto"></audio>
+
+<script>
+const beepSound = document.getElementById("beepSound");
+
+// Saat tombol Start ditekan → mainkan audio diam-diam untuk izin browser
+document.getElementById("startBtn").addEventListener("click", () => {
+  beepSound.volume = 0;
+  beepSound.play().then(() => {
+    beepSound.pause();
+    beepSound.currentTime = 0;
+    beepSound.volume = 1; // kembalikan volume normal
+    console.log("Audio diizinkan browser");
+  }).catch(err => {
+    console.warn("Gagal izin audio:", err);
+  });
+
+  startScanner();
+});
+
+function onScanSuccess(decodedText) {
+  // Putar suara beep setiap kali scan sukses
+  beepSound.currentTime = 0;
+  beepSound.play().catch(err => {
+    console.warn("Audio tidak bisa diputar:", err);
+  });
+
+  kirimKeSheets(decodedText);
+}
+</script>
+
   </div>
 
   <script>
@@ -183,4 +214,5 @@
   </script>
 </body>
 </html>
+
 
