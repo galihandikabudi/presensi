@@ -69,12 +69,12 @@
     </div>
 
     <div id="reader"></div>
-    <div id="hasil">Pilih mode, lalu arahkan kartu QR ke kamera untuk presensi.</div>
+    <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera untuk presensi.</div>
     <button id="stopBtn" class="secondary">Stop</button>
     <button id="startBtn">Start</button>
 
-    <!-- Elemen Audio -->
-<audio id="beepSound" src="https://drive.google.com/uc?export=download&id=1LFiVhSW8Fc0Y5kh5IInNrvbOzfyGdN9N" preload="auto"></audio>
+    <!-- Ganti src di bawah dengan link Google Drive direct download atau file lokal -->
+    <audio id="beepSound" src="https://drive.google.com/uc?export=download&id=1LFiVhSW8Fc0Y5kh5IInNrvbOzfyGdN9N" preload="auto"></audio>
   </div>
 
   <script>
@@ -83,9 +83,10 @@
     let html5QrCode = null;
     let isScanning = false;
     let scanCooldown = false;
-    let currentMode = "masuk"; // default mode
+    let currentMode = "masuk"; // default
     const COOLDOWN_MS = 3000;
     const hasilEl = document.getElementById("hasil");
+    const beepSound = document.getElementById("beepSound");
 
     function setMessage(text, type) {
       hasilEl.className = "";
@@ -128,9 +129,10 @@
       scanCooldown = true;
       setTimeout(() => scanCooldown = false, COOLDOWN_MS);
 
-      // Putar suara saat QR berhasil terbaca
-      document.getElementById("beepSound").play().catch(err => {
-        console.warn("Gagal memutar suara:", err);
+      // Mainkan suara beep setelah interaksi tombol Start sudah ada
+      beepSound.currentTime = 0; // mulai dari awal
+      beepSound.play().catch(err => {
+        console.warn("Audio tidak bisa diputar:", err);
       });
 
       kirimKeSheets(decodedText);
@@ -178,10 +180,6 @@
       currentMode = "pulang";
       setMessage("Mode presensi diubah ke PULANG.", "info");
     });
-
-    window.addEventListener("load", startScanner);
   </script>
 </body>
 </html>
-
-
