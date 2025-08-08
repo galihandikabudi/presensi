@@ -21,7 +21,7 @@ Penggunaan bebas untuk tujuan non-komersial.
 2. assets/beep.mp3 # Suara beep saat QR terbaca
 3. README.md # Dokumentasi singkat
 
-## 🚀 Cara Menggunakan
+## Cara Menggunakan
 1. **Upload** semua file ke GitHub Pages atau server yang mendukung HTTPS.
 2. Pastikan file **`beep.mp3`** ada di folder `assets/`.
 3. **Ganti URL Web App** di `index.html` dengan URL Google Apps Script Anda:
