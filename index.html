@@ -8,67 +8,94 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f6f7fb;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f2f5;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      color: #333;
     }
     .container {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 800px;
-    }
-    h1 { font-size: 20px; margin-bottom: 15px; text-align: center;}
-    #reader {
-      width: 100%;
-      background: black;
+      background: #fff;
+      padding: 20px 25px;
       border-radius: 10px;
-      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 420px;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      color: #2c3e50;
     }
     #hasil {
       margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.05);
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: #f8f9fa;
       min-height: 45px;
-      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.4;
+      transition: all 0.3s ease;
     }
-    .status-success { background: rgba(27,122,58,0.08); color: #1b7a3a; }
-    .status-warn { background: rgba(179,107,0,0.08); color: #b36b00; }
-    .status-danger { background: rgba(211,47,47,0.08); color: #d32f2f; }
-    button {
-      padding: 8px 12px;
-      border: none;
+    .status-success { background: #e6f4ea; color: #137333; }
+    .status-warn { background: #fff4e5; color: #b06a00; }
+    .status-danger { background: #fdecea; color: #d93025; }
+    #reader {
+      width: 100%;
       border-radius: 8px;
-      background: #2b8aef;
-      color: white;
-      cursor: pointer;
+      overflow: hidden;
+      background: #000;
+      margin-bottom: 12px;
     }
-    button.secondary { background: #ddd; color: #333; }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .primary {
+      background: #2b8aef;
+      color: #fff;
+    }
+    .primary:hover { background: #1f6fcc; }
+    .secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+    .secondary:hover { background: #c7c7c7; }
     .mode-buttons, .scan-buttons {
       display: flex;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Presensi Guru — Scan QR</h1>
-    <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera untuk presensi.</div>
+    <h1>📷 Presensi Guru — Scan QR</h1>
+
+    <!-- Keterangan hasil presensi di atas -->
+    <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera.</div>
+
     <div id="reader"></div>
+
+    <!-- Tombol Mode -->
     <div class="mode-buttons">
-      <button id="modeMasuk">Mode Masuk</button>
+      <button id="modeMasuk" class="primary">Mode Masuk</button>
       <button id="modePulang" class="secondary">Mode Pulang</button>
     </div>
+
+    <!-- Tombol Start / Stop -->
     <div class="scan-buttons">
-      <button id="startBtn">Start</button>
+      <button id="startBtn" class="primary">Start</button>
       <button id="stopBtn" class="secondary">Stop</button>
     </div>
 
@@ -109,7 +136,7 @@
             setMessage("❌ " + txt, "danger");
           }
         })
-        .catch(err => {
+        .catch(() => {
           setMessage("❌ Gagal kirim data!", "danger");
         });
     }
@@ -130,7 +157,7 @@
 
       if (beepSound) {
         beepSound.currentTime = 0;
-        beepSound.play().catch(err => console.warn("Audio gagal diputar:", err));
+        beepSound.play().catch(() => {});
       }
 
       kirimKeSheets(decodedText);
@@ -145,7 +172,7 @@
           beepSound.pause();
           beepSound.currentTime = 0;
           beepSound.volume = 1;
-        }).catch(err => console.warn("Audio gagal saat izin:", err));
+        }).catch(() => {});
       }
 
       html5QrCode = new Html5Qrcode("reader");
@@ -154,7 +181,7 @@
           let cameraId = devices[0].id;
           html5QrCode.start(
             cameraId,
-            { fps: 10, qrbox: { width: 250, height: 250 } },
+            { fps: 10, qrbox: { width: 230, height: 230 } },
             onScanSuccess
           ).then(() => {
             isScanning = true;
@@ -190,4 +217,3 @@
   </script>
 </body>
 </html>
-
