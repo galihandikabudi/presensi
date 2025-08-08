@@ -113,9 +113,10 @@ function doGet(e) {
 
   return ContentService.createTextOutput("Mode tidak dikenali");
 }
+javascript```
 
 ---
 
-## 📜 Lisensi
+## Lisensi
 Proyek ini dibuat untuk keperluan internal sekolah.
 Penggunaan bebas untuk tujuan non-komersial.
