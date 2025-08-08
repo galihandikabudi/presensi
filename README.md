@@ -42,7 +42,7 @@ Gunakan skrip Apps Script untuk menerima parameter data dan mode, lalu simpan ke
 Pastikan Web App dipublikasikan dengan akses "Anyone" agar bisa menerima request dari aplikasi.
 Berikut adalah skripya:
 
-```javascript
+   ```javascript
    function doGet(e) {
      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("DataPresensi");
      var data = e.parameter.data;
