@@ -32,7 +32,7 @@
       overflow: hidden;
     }
     #hasil {
-      margin-top: 15px;
+      margin-bottom: 15px;
       padding: 10px;
       border-radius: 8px;
       background: rgba(0,0,0,0.05);
@@ -43,7 +43,6 @@
     .status-warn { background: rgba(179,107,0,0.08); color: #b36b00; }
     .status-danger { background: rgba(211,47,47,0.08); color: #d32f2f; }
     button {
-      margin-top: 10px;
       padding: 8px 12px;
       border: none;
       border-radius: 8px;
@@ -52,33 +51,40 @@
       cursor: pointer;
     }
     button.secondary { background: #ddd; color: #333; }
-    .mode-buttons {
+    .mode-buttons, .scan-buttons {
       display: flex;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>📷 Presensi Guru — Scan QR</h1>
-    
+
+    <!-- Keterangan hasil presensi pindah ke atas -->
+    <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera untuk presensi.</div>
+
+    <div id="reader"></div>
+
+    <!-- Tombol Mode di bawah -->
     <div class="mode-buttons">
       <button id="modeMasuk">Mode Masuk</button>
       <button id="modePulang" class="secondary">Mode Pulang</button>
     </div>
 
-    <div id="reader"></div>
-    <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera untuk presensi.</div>
-    <button id="stopBtn" class="secondary">Stop</button>
-    <button id="startBtn">Start</button>
+    <!-- Tombol Start / Stop di bawah mode -->
+    <div class="scan-buttons">
+      <button id="startBtn">Start</button>
+      <button id="stopBtn" class="secondary">Stop</button>
+    </div>
 
-    <!-- Audio beep di parent directory -->
+    <!-- Audio beep -->
     <audio id="beepSound" src="assets/beep.mp3" preload="auto"></audio>
   </div>
 
   <script>
-    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // URL Web App Google Apps Script
+    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec";
 
     let html5QrCode = null;
     let isScanning = false;
@@ -129,7 +135,6 @@
       scanCooldown = true;
       setTimeout(() => scanCooldown = false, COOLDOWN_MS);
 
-      // Putar suara beep
       if (beepSound) {
         beepSound.currentTime = 0;
         beepSound.play().catch(err => console.warn("Audio gagal diputar:", err));
@@ -141,14 +146,12 @@
     function startScanner() {
       if (isScanning) return;
 
-      // Memanaskan audio untuk izin browser
       if (beepSound) {
         beepSound.volume = 0;
         beepSound.play().then(() => {
           beepSound.pause();
           beepSound.currentTime = 0;
           beepSound.volume = 1;
-          console.log("Izin audio diberikan");
         }).catch(err => console.warn("Audio gagal saat izin:", err));
       }
 
@@ -183,7 +186,6 @@
 
     document.getElementById("startBtn").addEventListener("click", startScanner);
     document.getElementById("stopBtn").addEventListener("click", stopScanner);
-
     document.getElementById("modeMasuk").addEventListener("click", () => {
       currentMode = "masuk";
       setMessage("Mode presensi diubah ke MASUK.", "info");
@@ -195,4 +197,3 @@
   </script>
 </body>
 </html>
-
