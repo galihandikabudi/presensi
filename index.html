@@ -73,12 +73,13 @@
     <button id="stopBtn" class="secondary">Stop</button>
     <button id="startBtn">Start</button>
 
-    <!-- Suara beep dari Google Drive -->
-    <audio id="beepSound" src="https://drive.google.com/uc?export=download&id=1_FzXIKgaMll3Igf5wA-IFxkNwx5F4bwl" preload="auto"></audio>
+    <!-- Audio akan diisi lewat fetch blob -->
+    <audio id="beepSound" preload="auto"></audio>
   </div>
 
   <script>
     const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // URL Web App Google Apps Script
+    const beepFileId = "1_FzXIKgaMll3Igf5wA-IFxkNwx5F4bwl"; // ID Google Drive beep
 
     let html5QrCode = null;
     let isScanning = false;
@@ -87,6 +88,16 @@
     const COOLDOWN_MS = 3000;
     const hasilEl = document.getElementById("hasil");
     const beepSound = document.getElementById("beepSound");
+
+    // Ambil file beep dari Google Drive sebagai blob
+    fetch(`https://drive.google.com/uc?export=download&id=${beepFileId}`)
+      .then(res => res.blob())
+      .then(blob => {
+        const localUrl = URL.createObjectURL(blob);
+        beepSound.src = localUrl;
+        console.log("Beep sound loaded dari Google Drive");
+      })
+      .catch(err => console.error("Gagal memuat beep sound:", err));
 
     function setMessage(text, type) {
       hasilEl.className = "";
@@ -130,7 +141,7 @@
       setTimeout(() => scanCooldown = false, COOLDOWN_MS);
 
       // Putar suara beep
-      if (beepSound) {
+      if (beepSound && beepSound.src) {
         beepSound.currentTime = 0;
         beepSound.play().catch(err => console.warn("Audio gagal diputar:", err));
       }
@@ -142,7 +153,7 @@
       if (isScanning) return;
 
       // Memanaskan audio untuk izin browser
-      if (beepSound) {
+      if (beepSound && beepSound.src) {
         beepSound.volume = 0;
         beepSound.play().then(() => {
           beepSound.pause();
