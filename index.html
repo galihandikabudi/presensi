@@ -61,7 +61,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Presensi Guru SMK Muhada</h1>
+    <h1>📷 Presensi Guru — Scan QR</h1>
     
     <div class="mode-buttons">
       <button id="modeMasuk">Mode Masuk</button>
@@ -72,14 +72,18 @@
     <div id="hasil">Klik tombol <b>Start</b> lalu arahkan kartu QR ke kamera untuk presensi.</div>
     <button id="stopBtn" class="secondary">Stop</button>
     <button id="startBtn">Start</button>
+
+    <!-- Suara beep dari Google Drive -->
+    <audio id="beepSound" src="https://drive.google.com/uc?export=download&id=1_FzXIKgaMll3Igf5wA-IFxkNwx5F4bwl" preload="auto"></audio>
   </div>
 
   <script>
-    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // URL Google Apps Script
+    const webAppURL = "https://script.google.com/macros/s/AKfycbzljlI3Y_CgiY0HHUcSyxW6j9dYQf4w3lRkOYlCBap0PgZXlVNYSG0SzJBXTDPq6tat/exec"; // URL Web App Google Apps Script
+
     let html5QrCode = null;
     let isScanning = false;
     let scanCooldown = false;
-    let currentMode = "masuk"; // default
+    let currentMode = "masuk";
     const COOLDOWN_MS = 3000;
     const hasilEl = document.getElementById("hasil");
     const beepSound = document.getElementById("beepSound");
@@ -125,17 +129,29 @@
       scanCooldown = true;
       setTimeout(() => scanCooldown = false, COOLDOWN_MS);
 
-      // Mainkan suara beep setelah interaksi tombol Start sudah ada
-      beepSound.currentTime = 0; // mulai dari awal
-      beepSound.play().catch(err => {
-        console.warn("Audio tidak bisa diputar:", err);
-      });
+      // Putar suara beep
+      if (beepSound) {
+        beepSound.currentTime = 0;
+        beepSound.play().catch(err => console.warn("Audio gagal diputar:", err));
+      }
 
       kirimKeSheets(decodedText);
     }
 
     function startScanner() {
       if (isScanning) return;
+
+      // Memanaskan audio untuk izin browser
+      if (beepSound) {
+        beepSound.volume = 0;
+        beepSound.play().then(() => {
+          beepSound.pause();
+          beepSound.currentTime = 0;
+          beepSound.volume = 1;
+          console.log("Izin audio diberikan");
+        }).catch(err => console.warn("Audio gagal saat izin:", err));
+      }
+
       html5QrCode = new Html5Qrcode("reader");
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
@@ -179,6 +195,3 @@
   </script>
 </body>
 </html>
-
-
-
